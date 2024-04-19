@@ -15,14 +15,22 @@ class Hash():
         self.filter = filter
         self.filter_size = filter_size
 
-    def hash_item(self,item):
+    def hash_item_sha256(self,item):
         hash_object = hashlib.sha256(item.encode())
+        hash_digest = hash_object.hexdigest()
+        index = int(hash_digest, 16) % self.filter_size
+        return index
+    
+    def hash_item_md5(self,item):
+        hash_object = hashlib.md5(item.encode())
         hash_digest = hash_object.hexdigest()
         index = int(hash_digest, 16) % self.filter_size
         return index
 
     def hash_data(self, data):
         for c in data:
-            index = self.hash_item(c)
+            index = self.hash_item_sha256(c)
             self.filter[index] = 1
+            index = self.hash_item_md5(c)
+            self.filter[index] = 1            
         return self.filter
